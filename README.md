@@ -16,9 +16,6 @@ It covers all 8 challenges: advanced system prompt, tool calling, voice (STT/TTS
 https://pd-agent-cma.vercel.app/
 
 
-### THIS IS THE DEPLOY URL
-https://pd-agent-cma.vercel.app/
-
 ## Installation
 
 ```bash
