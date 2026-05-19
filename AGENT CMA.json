@@ -1,0 +1,683 @@
+{
+  "name": "AGENT CMA",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "finbot",
+        "responseMode": "=responseNode",
+        "options": {}
+      },
+      "id": "2bb3e792-cf14-4645-870b-ad3d49fbaf9d",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        640
+      ],
+      "webhookId": "fecd7512-be06-4711-a2f1-fe0c10c2d6a9"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body;\n\nreturn [{\n  userMessage: body.message,\n  history: body.history || [],\n  ragContext: body.ragContext || null,\n  hasImage: body.imageBase64 !== null && body.imageBase64 !== undefined,\n  imageBase64: body.imageBase64 || null,\n  imageMime: body.imageMime || null\n}];"
+      },
+      "id": "4ef4e6ad-07b9-4574-abb1-84e3d0816831",
+      "name": "Extract Variables",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "e7beafda-ad41-44f5-9ead-3681b0511a26",
+      "name": "OpenAI Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        688,
+        848
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "uervwRrFOWQngPWf",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "dólar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "01e6abef-a4c3-429b-a63a-454ce427b3ed"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "tasa de cambio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "98c3e556-6e39-48a1-97db-1c419711021d"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "USD",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "a22ba2e1-4725-42f8-b1da-212da743794b"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "COP",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "34e4fb14-64c0-40be-bcc4-d3d10128c193"
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "exchange_rate"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "bitcoin",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "e4147144-bcbd-4338-a04b-1c99140dddcd"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "ethereum",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "0d0f72a9-e1cc-47af-ab75-b19f2f7df399"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "cripto",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "7e18542f-5eab-47e7-b7f6-8ad52a6977f5"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "BTC",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "6f6679c8-38f7-4ceb-a05e-b16c06fb3650"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "ETH",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "1e08af0e-7304-4429-8176-c2baef6de7a8"
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "crypto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "interés",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "26e89b6a-784c-4277-96ad-ca61023548f2"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "inversión",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "a1a57e0e-5783-4f64-935a-9aed273536d9"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "CDT",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "02af2f2e-1208-463f-a468-5d6e34752195"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "rendimiento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "fa115589-4868-47c5-971d-e5590a300fea"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "plazo",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "86397340-27b5-4ac7-ae3a-25fb0103559a"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "tasa",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "d362dde1-4b39-4e8e-b2c3-daf6f3b8f7b2"
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "interest"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "default"
+        }
+      },
+      "id": "126818d7-d37c-4d18-8ef2-9a7d9da70066",
+      "name": "Intent Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://open.er-api.com/v6/latest/USD",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "6f6d538a-04b6-4fab-a65e-bf24ee8673cc",
+      "name": "Fetch Exchange Rate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1264,
+        256
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "text1",
+              "name": "text",
+              "value": "=La tasa actual USD/COP es {{ $json.rates.COP }} pesos por dólar.",
+              "type": "string"
+            },
+            {
+              "id": "tool1",
+              "name": "toolUsed",
+              "value": "exchange_rate",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6e5a9b02-79c2-4816-88df-3a9a02c2f5f9",
+      "name": "Format Exchange Rate",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1488,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "id": "c1bad2b6-1558-40d3-9934-8aa29ef0a7fe",
+      "name": "Combine Responses",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1712,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd,cop",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "3c813271-8ba0-4f37-a94e-baaf1db4935a",
+      "name": "Fetch Crypto Prices",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1264,
+        544
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "text2",
+              "name": "text",
+              "value": "=Precios actuales de criptomonedas:\\nBitcoin (BTC): ${{ $json.bitcoin.usd }} USD / ${{ $json.bitcoin.cop }} COP\\nEthereum (ETH): ${{ $json.ethereum.usd }} USD / ${{ $json.ethereum.cop }} COP",
+              "type": "string"
+            },
+            {
+              "id": "tool2",
+              "name": "toolUsed",
+              "value": "crypto",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c9209d9d-683d-4993-af05-60873cf4f3b9",
+      "name": "Format Crypto",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1488,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const userMessage = $input.first().json.output;\n\n\n\n// Extract numbers from message using regex\nconst numbers = userMessage.match(/\\d+(\\.\\d+)?/g);\n\nlet principal = 1000000; // default 1M COP\nlet rate = 5; // default 5%\nlet years = 1; // default 1 year\n\nif (numbers && numbers.length >= 1) {\n  principal = parseFloat(numbers[0]);\n}\nif (numbers && numbers.length >= 2) {\n  rate = parseFloat(numbers[1]);\n}\nif (numbers && numbers.length >= 3) {\n  years = parseFloat(numbers[2]);\n}\n\nconst finalAmount = principal * Math.pow(1 + rate / 100, years);\nconst interest = finalAmount - principal;\n\nreturn [{\n  principal: principal,\n  rate: rate,\n  years: years,\n  finalAmount: finalAmount.toFixed(2),\n  interest: interest.toFixed(2),\n  text: `Con un capital inicial de $${principal.toLocaleString('es-CO')} COP a una tasa del ${rate}% anual durante ${years} año(s), obtendrías $${finalAmount.toLocaleString('es-CO', { minimumFractionDigits: 2 })} COP. Interés ganado: $${interest.toLocaleString('es-CO', { minimumFractionDigits: 2 })} COP.`,\n  toolUsed: 'calculate_interest'\n}];"
+      },
+      "id": "a2833f63-d08a-4ec5-bb48-0ff06dddbcb2",
+      "name": "Calculate Interest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        784
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "text3",
+              "name": "text",
+              "value": "={{ $('AGENT CMA IA').item.json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "tool3",
+              "name": "toolUsed",
+              "value": {},
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1b281a93-c155-4a56-8775-6a8a068c76e0",
+      "name": "Format AI Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1488,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "errText",
+              "name": "text",
+              "value": "Lo sentimos, hubo un error procesando tu solicitud. Intenta de nuevo.",
+              "type": "string"
+            },
+            {
+              "id": "errTool",
+              "name": "toolUsed",
+              "value": {},
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4aff459d-b5d3-4397-a79c-998ecda8d52d",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1488,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"text\": $json.text, \"toolUsed\": $json.toolUsed } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "1e27088d-1c93-496b-8ed8-cbc6b367092a",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1936,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Extract Variables').item.json.userMessage }}",
+        "options": {
+          "systemMessage": "=Eres FinBot, el asistente oficial de Bancolombia — institución financiera líder en Colombia. Responde siempre en el idioma del usuario (español o inglés). Solo tratas temas financieros y productos de Bancolombia: cuentas, tarjetas de crédito y débito, créditos, vivienda, seguros, inversiones, giros, leasing, compra/venta de dólares, canales digitales (Sucursal Virtual, App Mi Bancolombia, Corresponsal Bancario). Si te preguntan algo fuera de este dominio, declina amablemente. Si hay RAG_CONTEXT disponible, úsalo como fuente prioritaria y cítalo como \"Según nuestra información oficial...\". {{ $(\"Extract Variables\").item.json.ragContext ? \"CONTEXTO OFICIAL:\\n\" + $(\"Extract Variables\").item.json.ragContext : \"\" }}"
+        }
+      },
+      "id": "2acfd0c1-7080-4e85-9c5f-aafc059cbeec",
+      "name": "AGENT CMA IA",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        688,
+        640
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Variables": {
+      "main": [
+        [
+          {
+            "node": "AGENT CMA IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AGENT CMA IA",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Intent Router": {
+      "main": [
+        [
+          {
+            "node": "Fetch Exchange Rate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Crypto Prices",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Calculate Interest",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Exchange Rate": {
+      "main": [
+        [
+          {
+            "node": "Format Exchange Rate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Exchange Rate": {
+      "main": [
+        [
+          {
+            "node": "Combine Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Responses": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Crypto Prices": {
+      "main": [
+        [
+          {
+            "node": "Format Crypto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Crypto": {
+      "main": [
+        [
+          {
+            "node": "Combine Responses",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Calculate Interest": {
+      "main": [
+        [
+          {
+            "node": "Combine Responses",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Format AI Response": {
+      "main": [
+        [
+          {
+            "node": "Combine Responses",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Combine Responses",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Combine Responses",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "AGENT CMA IA": {
+      "main": [
+        [
+          {
+            "node": "Intent Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1eae357b-6fcd-4264-926b-4a261ab916de",
+  "meta": {
+    "instanceId": "ece8d1a6de98969222e0255eba0eef772646999f09e2a4c17b77526e1aa17881"
+  },
+  "id": "QyPINQcA68pDmz6c",
+  "tags": []
+}
