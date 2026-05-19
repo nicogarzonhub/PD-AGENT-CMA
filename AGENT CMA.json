@@ -64,7 +64,7 @@
             {
               "conditions": {
                 "options": {
-                  "caseSensitive": true,
+                  "caseSensitive": false,
                   "leftValue": "",
                   "typeValidation": "strict",
                   "version": 3
@@ -105,6 +105,33 @@
                       "operation": "contains"
                     },
                     "id": "34e4fb14-64c0-40be-bcc4-d3d10128c193"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "usd",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "new-id-usd-lowercase"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "dolar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "new-id-dolar-no-accent"
+                  },
+                  {
+                    "leftValue": "={{ $('Extract Variables').item.json.userMessage }}",
+                    "rightValue": "pesos",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "new-id-pesos"
                   }
                 ],
                 "combinator": "or"
@@ -115,7 +142,7 @@
             {
               "conditions": {
                 "options": {
-                  "caseSensitive": true,
+                  "caseSensitive": false,
                   "leftValue": "",
                   "typeValidation": "strict",
                   "version": 3
@@ -175,7 +202,7 @@
             {
               "conditions": {
                 "options": {
-                  "caseSensitive": true,
+                  "caseSensitive": false,
                   "leftValue": "",
                   "typeValidation": "strict",
                   "version": 3
@@ -280,28 +307,12 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "text1",
-              "name": "text",
-              "value": "=La tasa actual USD/COP es {{ $json.rates.COP }} pesos por dólar.",
-              "type": "string"
-            },
-            {
-              "id": "tool1",
-              "name": "toolUsed",
-              "value": "exchange_rate",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
+        "jsCode": "let copRate = 4100;\nconst data = $input.first().json;\nif (data && data.rates && data.rates.COP) {\n  copRate = data.rates.COP;\n}\n\nconst userMessage = $('Extract Variables').first().json.userMessage;\n\nconst numbers = userMessage.match(/\\d+(\\.\\d+)?/g);\nlet amount = 1;\nlet isConversion = false;\n\nif (numbers && numbers.length >= 1) {\n  amount = parseFloat(numbers[0]);\n  isConversion = true;\n}\n\nlet text = `La tasa actual USD/COP es ${copRate.toLocaleString('es-CO')} pesos por dólar.`;\n\nif (isConversion && amount !== 1) {\n  const converted = amount * copRate;\n  text = `${amount} USD equivalen aproximadamente a ${converted.toLocaleString('es-CO', { minimumFractionDigits: 2 })} COP (a una tasa de ${copRate}).`;\n}\n\n// Add a warning if fallback was used\nif (!data || !data.rates) {\n  text = \"⚠️ Usando tasa de cambio aproximada (API no disponible):\\n\" + text;\n}\n\nreturn [{\n  text: text,\n  toolUsed: 'exchange_rate'\n}];"
       },
       "id": "6e5a9b02-79c2-4816-88df-3a9a02c2f5f9",
       "name": "Format Exchange Rate",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         1488,
         208
@@ -343,28 +354,12 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "text2",
-              "name": "text",
-              "value": "=Precios actuales de criptomonedas:\\nBitcoin (BTC): ${{ $json.bitcoin.usd }} USD / ${{ $json.bitcoin.cop }} COP\\nEthereum (ETH): ${{ $json.ethereum.usd }} USD / ${{ $json.ethereum.cop }} COP",
-              "type": "string"
-            },
-            {
-              "id": "tool2",
-              "name": "toolUsed",
-              "value": "crypto",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
+        "jsCode": "const data = $input.first().json;\nlet text = '';\n\nif (data && data.bitcoin && data.ethereum) {\n  text = `Precios actuales de criptomonedas:\\nBitcoin (BTC): $${data.bitcoin.usd.toLocaleString('en-US')} USD / $${data.bitcoin.cop.toLocaleString('es-CO')} COP\\nEthereum (ETH): $${data.ethereum.usd.toLocaleString('en-US')} USD / $${data.ethereum.cop.toLocaleString('es-CO')} COP`;\n} else {\n  // Fallback si la API de CoinGecko falla (muy común desde servidores cloud)\n  const btcUsd = 67800;\n  const ethUsd = 3540;\n  const rate = 4100;\n  text = `⚠️ Usando precios aproximados (API no disponible):\\nBitcoin (BTC): $${btcUsd.toLocaleString('en-US')} USD / $${(btcUsd * rate).toLocaleString('es-CO')} COP\\nEthereum (ETH): $${ethUsd.toLocaleString('en-US')} USD / $${(ethUsd * rate).toLocaleString('es-CO')} COP`;\n}\n\nreturn [{\n  text: text,\n  toolUsed: 'crypto'\n}];"
       },
       "id": "c9209d9d-683d-4993-af05-60873cf4f3b9",
       "name": "Format Crypto",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         1488,
         592

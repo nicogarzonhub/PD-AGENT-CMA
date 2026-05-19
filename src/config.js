@@ -18,7 +18,7 @@ export const CONFIG = {
   // n8n Webhook
   // If configured, the bot routes ALL requests through n8n.
   // Leave empty to use OpenAI directly (fallback mode).
-  N8N_WEBHOOK_URL: "https://txnico07.app.n8n.cloud/webhook-test/finbot",     // ← ex: https://your-n8n.com/webhook/finbot
+  N8N_WEBHOOK_URL: "https://txnico07.app.n8n.cloud/webhook/finbot",     // ← ex: https://your-n8n.com/webhook/finbot
 
   //  Model
   OPENAI_MODEL: "gpt-4o-mini",
