@@ -12,7 +12,7 @@ It covers all 8 challenges: advanced system prompt, tool calling, voice (STT/TTS
 - **RAG**: Local embeddings + cosine similarity (no external vector database needed)
 - **Cache**: In-memory semantic cache using n-grams}
 
-### THIS IS THE DEPLOY URL=
+### DEPLOY URL=
 https://pd-agent-cma.vercel.app/
 
 
