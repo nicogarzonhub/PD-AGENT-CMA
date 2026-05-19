@@ -1,4 +1,4 @@
-# FinBot — Full AI Agent
+# AGENT CMA — Full AI Agent
 
 Bilingual conversational financial agent built for the 2026 RIWI hackathon/simulation.
 It covers all 8 challenges: advanced system prompt, tool calling, voice (STT/TTS), RAG, vision, semantic caching, UI with badges, and an end-to-end integration flow.
