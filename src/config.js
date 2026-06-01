@@ -23,11 +23,11 @@ export const CONFIG = {
   //  Model
   OPENAI_MODEL: "gpt-4o-mini",
 
-  //  Semantic Cache
+  // Semantic Cache
   CACHE_THRESHOLD: 0.90,   // 0.70 = more hits | 0.98 = exact matches only
 
   // Conversation Memory (Challenge 01)
-  MEMORY_WINDOW: 14,       // last N API messages (7 turns)
+  MEMORY_WINDOW: 14,        // 14 mensajes en total (7 turnos: 7 del usuario + 7 del bot)
 
   // ── Initial Prompts Suggestions
   QUICK_PROMPTS: [

@@ -382,6 +382,7 @@ export default function App() {
                 setApiHistory([])
                 localStorage.removeItem('finbot_messages')
                 localStorage.removeItem('finbot_history')
+                localStorage.removeItem('finbot_session_id')
               }
             }}
             title="Limpiar chat"

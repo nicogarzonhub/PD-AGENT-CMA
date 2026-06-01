@@ -33,12 +33,21 @@ function buildUserContent(text, imageBase64, imageMime) {
 // n8n Mode — calls the webhook 
 
 async function callViaN8n(webhookUrl, apiMessages, userText, imageBase64, imageMime) {
-  const ragContext = retrieveRAG(userText)
+  const ragContext = retrieveRAG(userText);
+
+  // Generamos o recuperamos un Session ID único para que n8n maneje la memoria de forma nativa
+  let sessionId = localStorage.getItem('finbot_session_id');
+  if (!sessionId) {
+    sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
+    localStorage.setItem('finbot_session_id', sessionId);
+  }
 
   const payload = {
-    message:    userText,
+    sessionId:  sessionId,
+    message:    userText, // Clean message to prevent memory pollution
     history:    apiMessages,
     ragContext: ragContext || null,
+    systemPrompt: SYSTEM_PROMPT,
     imageBase64: imageBase64 || null,
     imageMime:   imageMime   || null,
   }
@@ -58,7 +67,14 @@ async function callViaN8n(webhookUrl, apiMessages, userText, imageBase64, imageM
 
   // Expects n8n to return: { text: string, toolUsed?: string }
   let parsedTool = data.toolUsed;
-  if (!parsedTool || parsedTool === '0' || parsedTool === 0 || typeof parsedTool === 'object') {
+  if (
+    !parsedTool || 
+    parsedTool === '0' || 
+    parsedTool === 0 || 
+    parsedTool === '{}' || 
+    parsedTool === '[object Object]' || 
+    typeof parsedTool === 'object'
+  ) {
     parsedTool = null;
   }
 
