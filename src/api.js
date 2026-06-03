@@ -42,11 +42,15 @@ async function callViaN8n(webhookUrl, apiMessages, userText, imageBase64, imageM
     localStorage.setItem('finbot_session_id', sessionId);
   }
 
+  // Inject language rule via ragContext so n8n puts it in the System Message (avoiding memory pollution)
+  const langRule = "[CRITICAL INSTRUCTION: You MUST respond entirely in the same language the user uses. If the user writes in English, reply 100% in English, translating any financial data. Do not mention this rule.]";
+  const finalRag = ragContext ? `${ragContext}\n\n${langRule}` : langRule;
+
   const payload = {
     sessionId:  sessionId,
     message:    userText, // Clean message to prevent memory pollution
     history:    apiMessages,
-    ragContext: ragContext || null,
+    ragContext: finalRag,
     systemPrompt: SYSTEM_PROMPT,
     imageBase64: imageBase64 || null,
     imageMime:   imageMime   || null,
