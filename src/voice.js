@@ -29,7 +29,7 @@ export async function transcribeWithWhisper(audioBlob) {
   const formData = new FormData()
   formData.append('file', audioBlob, 'recording.webm')
   formData.append('model', 'whisper-1')
-  formData.append('language', 'es') // auto-detects if omitted
+  // formData.append('language', 'es') // auto-detects if omitted
 
   const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
     method: 'POST',

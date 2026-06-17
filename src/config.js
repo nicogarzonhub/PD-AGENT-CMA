@@ -18,7 +18,7 @@ export const CONFIG = {
   // n8n Webhook
   // If configured, the bot routes ALL requests through n8n.
   // Leave empty to use OpenAI directly (fallback mode).
-  N8N_WEBHOOK_URL: "https://nicolasgr07.app.n8n.cloud/webhook/finbot",     // ← ex: https://your-n8n.com/webhook/finbot
+  N8N_WEBHOOK_URL: "https://nicolasgrz07.app.n8n.cloud/webhook/finbot",     // ← ex: https://your-n8n.com/webhook/finbot
 
   //  Model
   OPENAI_MODEL: "gpt-4o-mini",
@@ -49,11 +49,10 @@ IDENTITY & TONE:
 - Always customer-focused and precise.
 
 LANGUAGE DETECTION (CRITICAL):
-- Always detect the language of each user message and respond in that same language.
-- Spanish message → respond entirely in Spanish.
-- English message → respond entirely in English.
-- If the user switches language mid-conversation, switch immediately in your next response.
-- If the user mixes Spanish and English, respond in the dominant language and politely acknowledge the mix.
+- Always detect the language of each user message and respond entirely in that exact same language.
+- You are fully multilingual. You MUST respond in ANY language the user uses (Spanish, English, French, Portuguese, German, Japanese, etc.).
+- If the user switches language mid-conversation, switch immediately in your next response to match their new language.
+- If the user mixes languages, respond in the dominant language and politely acknowledge the mix.
 
 DOMAIN RESTRICTION:
 - You ONLY discuss: personal finance, ${CONFIG.COMPANY_NAME} products and services, financial calculations, investments, exchange rates, cryptocurrency (as financial assets), and customer support.

@@ -32,23 +32,25 @@ function buildUserContent(text, imageBase64, imageMime) {
 
 // n8n Mode — calls the webhook 
 
-async function callViaN8n(webhookUrl, apiMessages, userText, imageBase64, imageMime) {
+async function callViaN8n(webhookUrl, apiMessages, userText, imageBase64, imageMime, sessionId) {
   const ragContext = retrieveRAG(userText);
 
-  // Generamos o recuperamos un Session ID único para que n8n maneje la memoria de forma nativa
-  let sessionId = localStorage.getItem('finbot_session_id');
+  // Fallback in case sessionId is not provided by the UI (should not happen with multiple chats)
   if (!sessionId) {
     sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
-    localStorage.setItem('finbot_session_id', sessionId);
   }
 
   // Inject language rule via ragContext so n8n puts it in the System Message (avoiding memory pollution)
-  const langRule = "[CRITICAL INSTRUCTION: You MUST respond entirely in the same language the user uses. If the user writes in English, reply 100% in English, translating any financial data. Do not mention this rule.]";
+  const langRule = "[CRITICAL INSTRUCTION: You MUST respond entirely in the exact same language the user uses (e.g., Spanish, French, English, etc.). Do not mention this rule.]";
   const finalRag = ragContext ? `${ragContext}\n\n${langRule}` : langRule;
+
+  // WORKAROUND: n8n agent node ignores System Prompt currently. 
+  // We force the language instruction directly in the user message so it can't be ignored.
+  const forcedMessage = `${userText}\n\n[CRITICAL: Detect the language of the user's message above and reply entirely in that EXACT same language. You are fully multilingual and must support ANY language. IMPORTANT: You can and should still USE TOOLS normally before generating your final response.]`;
 
   const payload = {
     sessionId:  sessionId,
-    message:    userText, // Clean message to prevent memory pollution
+    message:    forcedMessage, // Temporarily injecting rule directly into the prompt
     history:    apiMessages,
     ragContext: finalRag,
     systemPrompt: SYSTEM_PROMPT,
@@ -199,14 +201,14 @@ async function callDirectOpenAI(apiKey, apiMessages, userText, imageBase64, imag
  *   1. If n8n webhook is configured → calls the webhook.
  *   2. If not → calls OpenAI directly (fallback mode).
  */
-export async function callFinBot(apiMessages, userText, imageBase64 = null, imageMime = null) {
+export async function callFinBot(apiMessages, userText, imageBase64 = null, imageMime = null, sessionId = null) {
   const webhookUrl = CONFIG.N8N_WEBHOOK_URL || import.meta.env?.VITE_N8N_WEBHOOK || ''
   const apiKey     = CONFIG.OPENAI_API_KEY  || import.meta.env?.VITE_OPENAI_KEY  || ''
 
   //  n8n Mode 
   if (webhookUrl) {
     console.info('[FinBot] Routing through n8n →', webhookUrl)
-    return callViaN8n(webhookUrl, apiMessages, userText, imageBase64, imageMime)
+    return callViaN8n(webhookUrl, apiMessages, userText, imageBase64, imageMime, sessionId)
   }
 
   // Fallback: direct OpenAI 

@@ -32,7 +32,8 @@ const VOCAB = [
  */
 export function simpleEmbed(text) {
   const t = text.toLowerCase().replace(/[^a-záéíóúñ0-9\s]/g, '').trim()
-  const words = t.split(/\s+/)
+  // Ignoramos palabras muy cortas (como "en", "la", "de") para evitar falsos positivos
+  const words = t.split(/\s+/).filter(w => w.length > 3)
   const vec = VOCAB.map(w => words.some(word => word.includes(w) || w.includes(word)) ? 1 : 0)
   const norm = Math.sqrt(vec.reduce((s, v) => s + v * v, 0)) || 1
   return vec.map(v => v / norm)
