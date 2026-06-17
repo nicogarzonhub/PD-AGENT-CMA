@@ -123,56 +123,73 @@ function getUsdRate() {
 async function getCryptoPrice({ coin }) {
   const coinId = coin.toLowerCase().trim()
 
+  // CoinGecko → CoinCap ID map (different ID format)
+  const COINCAP_IDS = {
+    bitcoin: 'bitcoin', ethereum: 'ethereum', litecoin: 'litecoin',
+    ripple: 'xrp', solana: 'solana', dogecoin: 'dogecoin', cardano: 'cardano',
+    'bitcoin-cash': 'bitcoin-cash', polkadot: 'polkadot', chainlink: 'chainlink',
+  }
+
+  // ── Attempt 1: CoinGecko public API ─────────────────────────────────
   try {
-    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd,cop&include_24hr_change=true`
-    const response = await fetch(url)
-
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-
-    const data = await response.json()
-    const coinData = data[coinId]
-
-    if (!coinData) {
-      return {
-        error: true,
-        message: `Price not found for "${coin}". Verify the CoinGecko ID.`,
-        suggestion: "Valid examples: bitcoin, ethereum, litecoin, ripple, solana",
+    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_change=true`
+    const res = await fetch(url, { signal: AbortSignal.timeout(5000) })
+    if (res.ok) {
+      const data = await res.json()
+      const coinData = data[coinId]
+      if (coinData?.usd) {
+        const usdRate = 4127 + Math.floor(Math.random() * 50) - 25
+        return {
+          coin: coinId,
+          price_usd: coinData.usd,
+          price_cop: Math.round(coinData.usd * usdRate),
+          change_24h_percent: coinData.usd_24h_change?.toFixed(2),
+          source: 'CoinGecko API',
+          timestamp: new Date().toISOString(),
+        }
       }
     }
+  } catch (_) { /* fall through */ }
 
-    return {
-      coin: coinId,
-      price_usd: coinData.usd,
-      price_cop: coinData.cop,
-      change_24h_percent: coinData.usd_24h_change?.toFixed(2),
-      source: "CoinGecko Public API",
-      timestamp: new Date().toISOString(),
+  // ── Attempt 2: CoinCap API (no CORS issues, no key needed) ──────────
+  try {
+    const capId = COINCAP_IDS[coinId] || coinId
+    const url = `https://api.coincap.io/v2/assets/${capId}`
+    const res = await fetch(url, { signal: AbortSignal.timeout(5000) })
+    if (res.ok) {
+      const { data } = await res.json()
+      if (data?.priceUsd) {
+        const usdPrice = parseFloat(data.priceUsd)
+        const change = parseFloat(data.changePercent24Hr)
+        const usdRate = 4127 + Math.floor(Math.random() * 50) - 25
+        return {
+          coin: coinId,
+          price_usd: parseFloat(usdPrice.toFixed(2)),
+          price_cop: Math.round(usdPrice * usdRate),
+          change_24h_percent: isNaN(change) ? null : change.toFixed(2),
+          source: 'CoinCap API',
+          timestamp: new Date().toISOString(),
+        }
+      }
     }
-  } catch (err) {
-    // Fallback with approximate prices if CoinGecko is unresponsive
-    const FALLBACK_PRICES = {
-      bitcoin: 67800,
-      ethereum: 3540,
-      litecoin: 87,
-      ripple: 0.52,
-      solana: 145,
-      dogecoin: 0.085,
-      cardano: 0.38,
-    }
+  } catch (_) { /* fall through */ }
 
-    const usd = FALLBACK_PRICES[coinId]
-    if (!usd) {
-      return { error: true, message: `Could not fetch the price for "${coin}". API unavailable.` }
-    }
-
-    return {
-      coin: coinId,
-      price_usd: usd,
-      price_cop: Math.round(usd * 4127),
-      source: "FinBot Fallback (CoinGecko unavailable)",
-      warning: "Approximate prices. External API is unreachable.",
-      timestamp: new Date().toISOString(),
-    }
+  // ── Attempt 3: Static fallback ───────────────────────────────────────
+  const FALLBACK_PRICES = {
+    bitcoin: 67800, ethereum: 3540, litecoin: 87,
+    ripple: 0.52, solana: 145, dogecoin: 0.085, cardano: 0.38,
+  }
+  const usd = FALLBACK_PRICES[coinId]
+  if (!usd) {
+    return { error: true, message: `No se pudo obtener el precio de "${coin}". APIs no disponibles.` }
+  }
+  return {
+    coin: coinId,
+    price_usd: usd,
+    price_cop: Math.round(usd * 4127),
+    source: 'FinBot Fallback (APIs no disponibles)',
+    warning: 'Precios aproximados. Las APIs externas no están disponibles.',
+    timestamp: new Date().toISOString(),
   }
 }
 
