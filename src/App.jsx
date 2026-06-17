@@ -569,9 +569,14 @@ export default function App() {
       {/* ── Main View ───────────────────────────────────────── */}
       <div className="main-view">
         {/* Mobile Header */}
-        <div className="hide-on-desktop" style={{ padding: '12px 16px', borderBottom: '0.5px solid var(--border)', display: 'flex', alignItems: 'center', gap: 12, background: 'var(--bg-secondary)' }}>
-          <button onClick={() => setSidebarOpen(true)} style={{ background: 'transparent', border: 'none', color: 'white', cursor: 'pointer', fontSize: 20 }}>☰</button>
-          <span style={{ fontWeight: 600 }}>{CONFIG.AGENT_NAME}</span>
+        <div className="hide-on-desktop" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg-primary)', zIndex: 10, position: 'sticky', top: 0 }}>
+          <button onClick={() => setSidebarOpen(true)} style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <span style={{ fontWeight: 600, fontSize: 16 }}>{CONFIG.AGENT_NAME}</span>
+          <button onClick={createNewChat} style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </button>
         </div>
 
       {/* ── Chat ─────────────────────────────────────────── */}
@@ -645,15 +650,8 @@ export default function App() {
           )}
 
           <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', padding: '4px 8px' }}>
-            <button
-              onClick={recording ? stopRecording : startRecording}
-              style={{ width: 32, height: 32, borderRadius: 8, border: 'none', cursor: 'pointer', background: recording ? 'var(--red)' : 'transparent', color: recording ? '#fff' : 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >
-              {recording ? <StopIcon /> : <MicIcon />}
-            </button>
-
-            <label style={{ width: 32, height: 32, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
-              <ImgIcon />
+            <label style={{ width: 32, height: 32, borderRadius: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', background: 'var(--bg-primary)' }}>
+              <span style={{ fontSize: 24, lineHeight: 0, marginTop: -2 }}>+</span>
               <input type="file" accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={e => handleImageFile(e.target.files[0])} />
             </label>
 
@@ -667,30 +665,37 @@ export default function App() {
                   sendMessage()
                 }
               }}
-              placeholder="Escribe un mensaje..."
+              placeholder="Mensaje..."
               rows={1}
               style={{
-                flex: 1, resize: 'none', padding: '6px 0', fontSize: 15,
+                flex: 1, resize: 'none', padding: '6px 8px', fontSize: 16,
                 border: 'none', background: 'transparent', color: 'var(--text-primary)',
                 maxHeight: 120, overflowY: 'auto', outline: 'none', fontFamily: 'inherit'
               }}
             />
 
-            <button
-              onClick={() => sendMessage()}
-              disabled={loading || (!input.trim() && !imageBase64)}
-              style={{
-                width: 32, height: 32, borderRadius: '50%', border: 'none',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                background: loading || (!input.trim() && !imageBase64) ? 'var(--bg-surface2)' : 'white',
-                color: loading || (!input.trim() && !imageBase64) ? 'var(--text-muted)' : 'black',
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}
-            >
-              <SendIcon />
-            </button>
+            {input.trim() || imageBase64 ? (
+              <button
+                onClick={() => sendMessage()}
+                disabled={loading}
+                style={{
+                  width: 32, height: 32, borderRadius: 16, border: 'none',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  background: 'var(--text-primary)', color: 'var(--bg-primary)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}
+              >
+                <SendIcon />
+              </button>
+            ) : (
+              <button
+                onClick={recording ? stopRecording : startRecording}
+                style={{ width: 32, height: 32, borderRadius: 16, border: 'none', cursor: 'pointer', background: recording ? 'var(--red)' : 'transparent', color: recording ? '#fff' : 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                {recording ? <StopIcon /> : <MicIcon />}
+              </button>
+            )}
           </div>
-          
           <div className="hide-on-mobile" style={{ textAlign: 'center', fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>
              {CONFIG.AGENT_NAME} puede cometer errores. Considera verificar la información importante.
           </div>

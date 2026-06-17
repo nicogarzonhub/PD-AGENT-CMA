@@ -46,7 +46,10 @@ async function callViaN8n(webhookUrl, apiMessages, userText, imageBase64, imageM
 
   // WORKAROUND: n8n agent node ignores System Prompt currently. 
   // We force the language instruction directly in the user message so it can't be ignored.
-  const forcedMessage = `${userText}\n\n[CRITICAL: Detect the language of the user's message above and reply entirely in that EXACT same language. You are fully multilingual and must support ANY language. IMPORTANT: You can and should still USE TOOLS normally before generating your final response.]`;
+  const forcedMessage = `${userText}\n\n[CRITICAL INSTRUCTIONS: 
+1. Detect the language of the user's message above and reply entirely in that EXACT same language. You are fully multilingual.
+2. DOMAIN RESTRICTION: You MUST NEVER answer questions about non-financial topics (e.g., religion, sports, general history, programming, "mundial", etc.). Your ONLY allowed domains are personal finance and Bancolombia products. If the user asks about ANYTHING outside these domains, YOU MUST IMMEDIATELY DECLINE and say your programming only allows financial topics. DO NOT provide even a partial answer to the off-topic question.
+3. You can and should still USE TOOLS normally before generating your final response.]`;
 
   const payload = {
     sessionId:  sessionId,
