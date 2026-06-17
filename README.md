@@ -16,7 +16,7 @@ This project integrates several advanced AI paradigms into a cohesive architectu
 - ** Voice Pipeline (STT/TTS)**: Integrated OpenAI Whisper API for Speech-to-Text and native browser Web Speech Synthesis for Text-to-Speech interactions.
 - ** Retrieval-Augmented Generation (RAG)**: Uses local vector embeddings and cosine similarity to inject domain-specific context into the prompt before hitting the LLM.
 - **Multimodal Vision**: Users can attach images to their queries. The agent analyzes the images contextually along with the text.
-- **⚡ Semantic Caching**: An ultra-fast, in-memory cache system using n-grams and cosine similarity to serve instant answers for repeated or semantically similar queries, saving API costs and reducing latency.
+- ** Semantic Caching**: An ultra-fast, in-memory cache system using n-grams and cosine similarity to serve instant answers for repeated or semantically similar queries, saving API costs and reducing latency.
 - ** Polished React UI**: A ChatGPT-inspired responsive interface featuring floating input, tool usage badges (`⚙ Tool`), cache hit badges (`■ Caché`), and chat session management.
 
 ##  Tech Stack
@@ -63,7 +63,7 @@ User Input (Text / Voice / Image)
        └─ addToCache() ──────────► Memorizes the semantic interaction for future use
 ```
 
-## 🚀Installation & Setup
+## Installation & Setup
 
 1. **Clone the repository and install dependencies**
    ```bash
@@ -88,7 +88,7 @@ User Input (Text / Voice / Image)
    ```
    Open `http://localhost:3000` (or the port provided by Vite) to view the application.
 
-## 📝 Configuration
+##  Configuration
 
 You can easily tweak the agent's behavior by editing `src/config.js`:
 - `AGENT_NAME` / `COMPANY_NAME`: Change the bot's identity and persona.
