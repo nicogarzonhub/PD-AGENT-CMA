@@ -29,13 +29,10 @@ This project integrates several advanced AI paradigms into a cohesive architectu
 
 To prevent LLM hallucinations, the agent is equipped with custom tools that fetch deterministic data:
 
-### 1. `calculate_interest` (Compound Interest)
-Executes a mathematical formula (`A = P * (1 + r/n)^(n*t)`) to simulate investments, returning the final amount, generated interest, and effective monthly rates.
-
-### 2. `get_usd_rate` (USD/COP Exchange Rate)
+### 1. `get_usd_rate` (USD/COP Exchange Rate)
 Simulates a real-time market exchange rate for US Dollars to Colombian Pesos. Designed to be easily hot-swapped with a live Exchange Rate API like `open.er-api.com`.
 
-### 3. `get_crypto_price` (Live Cryptocurrencies)
+### 2. `get_crypto_price` (Live Cryptocurrencies)
 Makes HTTP requests to the **CoinGecko API** to fetch the real-time USD and COP prices of requested cryptocurrencies, along with 24h market fluctuations. Includes a robust fallback mechanism if the public API rate-limits the request.
 
 ##  Architecture Flow
