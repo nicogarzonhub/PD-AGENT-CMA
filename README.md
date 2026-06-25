@@ -2,7 +2,6 @@
 
 A sophisticated, bilingual conversational AI agent built for my professional portfolio. This project demonstrates end-to-end integration of modern AI capabilities into a React web application, showcasing advanced agentic behaviors, real-time tool execution, and high-performance optimizations.
 
-**Live Demo:** [https://pd-agent-cma.vercel.app/](https://pd-agent-cma.vercel.app/)  
 **GitHub Repository:** [https://github.com/nicogarzonhub/PD-AGENT-CMA](https://github.com/nicogarzonhub/PD-AGENT-CMA)
 
 ---
