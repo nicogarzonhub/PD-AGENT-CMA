@@ -585,7 +585,13 @@ export default function App() {
 
         {messages.length === 0 && (
           <div style={{ textAlign: 'center', padding: '48px 20px', color: 'var(--text-secondary)' }}>
-            <div style={{ fontSize: 42, marginBottom: 12 }}>💼</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+              <svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 12px var(--accent-border))' }}>
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+              </svg>
+            </div>
             <p style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 16, marginBottom: 6 }}>
               {CONFIG.AGENT_NAME}
             </p>

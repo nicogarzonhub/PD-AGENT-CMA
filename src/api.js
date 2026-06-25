@@ -44,28 +44,14 @@ async function callViaN8n(webhookUrl, apiMessages, userText, imageBase64, imageM
   const langRule = "[CRITICAL INSTRUCTION: You MUST respond entirely in the exact same language the user uses (e.g., Spanish, French, English, etc.). Do not mention this rule.]";
   const finalRag = ragContext ? `${ragContext}\n\n${langRule}` : langRule;
 
-  // Detect user language from the message to explicitly name it in the instruction
-  // This makes it much harder for the AI agent to ignore
-  function detectLang(text) {
-    const t = text.toLowerCase()
-    if (/[àáâãäåæçèéêëìíîïðñòóôõöùúûü]/.test(t) || /\b(el|la|los|las|un|una|qué|cómo|cuál|para|con|del|precio|cuánto|bitcoin|dólar|hoy|por|favor)\b/.test(t)) return 'SPANISH'
-    if (/\b(the|what|how|price|dollar|today|for|with|much|bitcoin|please|can|you)\b/.test(t)) return 'ENGLISH'
-    if (/\b(le|la|les|des|du|pour|avec|prix|combien|aujourd)\b/.test(t)) return 'FRENCH'
-    if (/\b(o|a|os|as|um|uma|para|com|do|da|qual|como|preço|quanto)\b/.test(t)) return 'PORTUGUESE'
-    return 'the SAME language as the user message above'
-  }
-  const detectedLang = detectLang(userText)
-
   // WORKAROUND: n8n agent node ignores System Prompt currently. 
   // We force the language instruction directly in the user message so it can't be ignored.
-  const forcedMessage = `⚠️ MANDATORY LANGUAGE: Respond in ${detectedLang} ONLY. ⚠️
+  const forcedMessage = `${userText}
 
-${userText}
-
-[CRITICAL INSTRUCTIONS — FOLLOW ALL OR YOUR RESPONSE IS WRONG:
-1. LANGUAGE: You MUST respond EXCLUSIVELY in ${detectedLang}. The user wrote in ${detectedLang}, so your ENTIRE response must be in ${detectedLang}. If you respond in any other language, you are failing your task.
-2. DOMAIN: You MUST NEVER answer questions about non-financial topics (religion, sports, history, general knowledge, etc.). If off-topic, decline in ${detectedLang} and redirect to finance.
-3. TOOLS: Use tools normally before generating your final response.]`;
+[CRITICAL INSTRUCTIONS:
+1. LANGUAGE MATCHING: You MUST detect the language of the text above ("${userText}") and reply EXCLUSIVELY in that same language. Ignore the language of the previous conversation history. If the current text is in English, reply in English. If Spanish, in Spanish. If French, in French.
+2. DOMAIN: Never answer non-financial topics. Decline in the detected language.
+3. TOOLS: Use tools normally if needed.]`;
 
   const payload = {
     sessionId:  sessionId,
